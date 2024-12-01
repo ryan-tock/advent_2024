@@ -18,9 +18,9 @@ fn main() {
     let column2 = entries.iter().map(|x| x.1).sorted().collect_vec();
 
     let mut occurrences = HashMap::new();
-    for i in column2.iter() {
-        *occurrences.entry(*i).or_insert(0) += 1;
-    }
+    column2
+        .iter()
+        .for_each(|x| *occurrences.entry(*x).or_insert(0) += 1);
 
     let similarity_score = column1
         .iter()
