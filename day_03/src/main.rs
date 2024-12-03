@@ -14,8 +14,6 @@ fn main() {
 
     let active_code = disables[0].to_owned() + &active_code.join("");
 
-    println!("{}", active_code);
-
     let mut total: i32 = 0;
     for (_, [num1, num2]) in re.captures_iter(INPUT).map(|captures| captures.extract()) {
         total += num1.parse::<i32>().unwrap() * num2.parse::<i32>().unwrap()
