@@ -21,73 +21,58 @@ fn main() {
         })
         .collect_vec();
 
-    let mut calibration_count: i64 = 0;
+    use std::time::Instant;
+    let start = Instant::now();
 
-    for line in lines.iter() {
-        let (target, nums) = line;
+    let calibration_result = lines
+        .iter()
+        .map(|(target, nums)| target * is_vaild(*target, nums, false) as i64)
+        .sum::<i64>();
+    println!("Part 1: {}", calibration_result);
 
-        let operators = nums.len() - 1;
+    let part1 = start.elapsed().as_millis();
 
-        let mut works = false;
+    let calibration_result = lines
+        .iter()
+        .map(|(target, nums)| target * is_vaild(*target, nums, true) as i64)
+        .sum::<i64>();
+    println!("Part 2: {}", calibration_result);
 
-        for state in 0usize..2usize.pow(operators as u32) {
-            let mut result = nums[0];
+    let part2 = start.elapsed().as_millis();
 
-            for num in 1usize..=operators {
-                if (state >> (num - 1)) % 2 == 0 {
-                    result += nums[num];
-                } else {
-                    result *= nums[num];
+    println!("Part 1 time: {} ms", part1);
+    println!("Part 2 time: {} ms", part2 - part1);
+    println!("Total time: {} ms", part2);
+}
+
+fn is_vaild(target: i64, numbers: &Vec<i64>, concat: bool) -> bool {
+    let mut possible_results: Vec<i64> = Vec::new();
+    possible_results.push(numbers[0]);
+
+    for num_index in 1..numbers.len() {
+        let mut new_results: Vec<i64> = Vec::new();
+        for i in 0..possible_results.len() {
+            let mut new: [i64; 3] = [0; 3];
+            new[0] = possible_results[i] + numbers[num_index];
+            new[1] = possible_results[i] * numbers[num_index];
+            if concat {
+                new[2] = (possible_results[i].to_string()
+                    + numbers[num_index].to_string().as_str())
+                .parse::<i64>()
+                .unwrap();
+            }
+            for x in 0..(2 + concat as usize) {
+                if new[x] == target {
+                    return true;
+                }
+                if new[x] < target {
+                    new_results.push(new[x]);
                 }
             }
-
-            if result == *target {
-                works = true;
-                break;
-            }
         }
 
-        if works {
-            calibration_count += *target;
-        }
+        possible_results = new_results
     }
 
-    println!("Part 1: {}", calibration_count);
-
-    let mut calibration_count: i64 = 0;
-
-    for line in lines.iter() {
-        let (target, nums) = line;
-
-        let num_operators = nums.len() - 1;
-
-        let mut works = false;
-
-        for state in 0usize..3usize.pow(num_operators as u32) {
-            let mut result = nums[0];
-
-            for num in 1usize..=num_operators {
-                let operator_num = (state / 3usize.pow((num - 1) as u32)) % 3;
-                if operator_num == 0 {
-                    result += nums[num];
-                } else if operator_num == 1 {
-                    result *= nums[num];
-                } else {
-                    result *= 10usize.pow(nums[num].to_string().len() as u32) as i64;
-                    result += nums[num];
-                }
-            }
-
-            if result == *target {
-                works = true;
-                break;
-            }
-        }
-
-        if works {
-            calibration_count += *target;
-        }
-    }
-
-    println!("Part 2: {}", calibration_count);
+    false
 }
