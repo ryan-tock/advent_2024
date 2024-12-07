@@ -1,8 +1,11 @@
 use itertools::Itertools;
+use std::time::Instant;
 
 const INPUT: &str = include_str!("input.txt");
 
 fn main() {
+    let start = Instant::now();
+
     let lines = INPUT
         .lines()
         .map(|line| line.split(": ").collect_tuple::<(&str, &str)>().unwrap())
@@ -20,9 +23,6 @@ fn main() {
             )
         })
         .collect_vec();
-
-    use std::time::Instant;
-    let start = Instant::now();
 
     let calibration_result = lines
         .iter()
