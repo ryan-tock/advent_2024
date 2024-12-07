@@ -12,10 +12,10 @@ fn main() {
         .iter()
         .map(|line| {
             (
-                line.0.parse::<i64>().unwrap(),
+                line.0.parse::<u64>().unwrap(),
                 line.1
                     .split(" ")
-                    .map(|x| x.parse::<i64>().unwrap())
+                    .map(|x| x.parse::<u64>().unwrap())
                     .collect_vec(),
             )
         })
@@ -26,16 +26,16 @@ fn main() {
 
     let calibration_result = lines
         .iter()
-        .map(|(target, nums)| target * is_vaild(*target, nums, false) as i64)
-        .sum::<i64>();
+        .map(|(target, nums)| target * is_vaild(*target, nums, false) as u64)
+        .sum::<u64>();
     println!("Part 1: {}", calibration_result);
 
     let part1 = start.elapsed().as_millis();
 
     let calibration_result = lines
         .iter()
-        .map(|(target, nums)| target * is_vaild(*target, nums, true) as i64)
-        .sum::<i64>();
+        .map(|(target, nums)| target * is_vaild(*target, nums, true) as u64)
+        .sum::<u64>();
     println!("Part 2: {}", calibration_result);
 
     let part2 = start.elapsed().as_millis();
@@ -45,23 +45,23 @@ fn main() {
     println!("Total time: {} ms", part2);
 }
 
-fn is_vaild(target: i64, numbers: &Vec<i64>, concat: bool) -> bool {
-    let mut possible_results: Vec<i64> = Vec::new();
+fn is_vaild(target: u64, numbers: &Vec<u64>, concat: bool) -> bool {
+    let mut possible_results: Vec<u64> = Vec::new();
     possible_results.push(numbers[0]);
 
+    let num_operations = if concat { 3 } else { 2 };
+
     for num_index in 1..numbers.len() {
-        let mut new_results: Vec<i64> = Vec::new();
+        let mut new_results: Vec<u64> = Vec::with_capacity(possible_results.len() * num_operations);
         for i in 0..possible_results.len() {
-            let mut new: [i64; 3] = [0; 3];
+            let mut new: [u64; 3] = [0; 3];
             new[0] = possible_results[i] + numbers[num_index];
             new[1] = possible_results[i] * numbers[num_index];
             if concat {
-                new[2] = (possible_results[i].to_string()
-                    + numbers[num_index].to_string().as_str())
-                .parse::<i64>()
-                .unwrap();
+                new[2] = possible_results[i] * 10u64.pow(numbers[num_index].ilog10() + 1)
+                    + numbers[num_index]
             }
-            for x in 0..(2 + concat as usize) {
+            for x in 0..num_operations {
                 if new[x] == target {
                     return true;
                 }
