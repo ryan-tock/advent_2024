@@ -24,29 +24,31 @@ fn main() {
     let mut calibration_count: i64 = 0;
 
     for line in lines.iter() {
-        let operators = line.1.len() - 1;
+        let (target, nums) = line;
+
+        let operators = nums.len() - 1;
 
         let mut works = false;
 
         for state in 0usize..2usize.pow(operators as u32) {
-            let mut result = line.1[0];
+            let mut result = nums[0];
 
             for num in 1usize..=operators {
                 if (state >> (num - 1)) % 2 == 0 {
-                    result += line.1[num];
+                    result += nums[num];
                 } else {
-                    result *= line.1[num];
+                    result *= nums[num];
                 }
             }
 
-            if result == line.0 {
+            if result == *target {
                 works = true;
                 break;
             }
         }
 
         if works {
-            calibration_count += line.0;
+            calibration_count += *target;
         }
     }
 
@@ -55,33 +57,35 @@ fn main() {
     let mut calibration_count: i64 = 0;
 
     for line in lines.iter() {
-        let operators = line.1.len() - 1;
+        let (target, nums) = line;
+
+        let num_operators = nums.len() - 1;
 
         let mut works = false;
 
-        for state in 0usize..3usize.pow(operators as u32) {
-            let mut result = line.1[0];
+        for state in 0usize..3usize.pow(num_operators as u32) {
+            let mut result = nums[0];
 
-            for num in 1usize..=operators {
+            for num in 1usize..=num_operators {
                 let operator_num = (state / 3usize.pow((num - 1) as u32)) % 3;
                 if operator_num == 0 {
-                    result += line.1[num];
+                    result += nums[num];
                 } else if operator_num == 1 {
-                    result *= line.1[num];
+                    result *= nums[num];
                 } else {
-                    result *= 10usize.pow(line.1[num].to_string().len() as u32) as i64;
-                    result += line.1[num];
+                    result *= 10usize.pow(nums[num].to_string().len() as u32) as i64;
+                    result += nums[num];
                 }
             }
 
-            if result == line.0 {
+            if result == *target {
                 works = true;
                 break;
             }
         }
 
         if works {
-            calibration_count += line.0;
+            calibration_count += *target;
         }
     }
 
